@@ -6,22 +6,29 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.87",
+    "@ai-sdk/openai": "^4.0.83",
     "@headlessui/react": "^1.7.7",
     "@headlessui/tailwindcss": "^0.1.2",
     "@heroicons/react": "^2.0.13",
     "@tailwindcss/forms": "^0.5.3",
     "@vercel/analytics": "^0.1.8",
+    "ai": "^7.0.126",
     "eventsource-parser": "^0.0.5",
     "framer-motion": "^8.4.3",
     "next": "latest",
+    "next-auth": "^4.24.15",
+    "pg": "^8.23.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.42.0",
     "react-hot-toast": "^2.4.0",
-    "react-use-measure": "^2.1.1"
+    "react-use-measure": "^2.1.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "18.11.3",
+    "@types/pg": "^8.23.1",
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
     "autoprefixer": "^10.4.12",

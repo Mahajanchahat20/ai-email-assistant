@@ -1,38 +1,49 @@
-import type { NextRequest } from "next/server";
-import { OpenAIStream, OpenAIStreamPayload } from "../../utils/OpenAIStream";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { streamText } from "ai";
+import { google } from "@ai-sdk/google";
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("Missing env var from OpenAI");
+if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  throw new Error("Missing GOOGLE_GENERATIVE_AI_API_KEY");
 }
 
 export const config = {
-  runtime: "edge",
+  api: {
+    bodyParser: true,
+  },
 };
 
-const handler = async (req: NextRequest): Promise<Response> => {
-  const { prompt } = (await req.json()) as {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Method not allowed",
+    });
+  }
+
+  const { prompt } = req.body as {
     prompt?: string;
   };
 
   if (!prompt) {
-    return new Response("No prompt in the request", { status: 400 });
+    return res.status(400).json({
+      error: "No prompt in the request",
+    });
   }
 
-  const payload: OpenAIStreamPayload = {
-    // model: "text-davinci-003",
-    model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.7,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-    max_tokens: 500,
-    stream: true,
-    n: 1,
-  };
+  try {
+    const result = streamText({
+      model: google("gemini-3.1-flash-lite"),
+      prompt,
+    });
 
-  const stream = await OpenAIStream(payload);
-  return new Response(stream);
-};
+    result.pipeTextStreamToResponse(res);
+  } catch (error) {
+    console.error("Generation error:", error);
 
-export default handler;
+    return res.status(500).json({
+      error: "Failed to generate email",
+    });
+  }
+}
